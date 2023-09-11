@@ -1,13 +1,11 @@
-import React from "react";
 import {MicrophoneIcon} from "@heroicons/react/20/solid";
-import {useDispatch, useSelector} from "react-redux";
-import {updateMMS, updateST_1} from "../store/taskReducer.ts";
+import {useDispatch} from "react-redux";
+import {updateMMS} from "../store/taskReducer.ts";
 
 export const FooterComponent = () => {
     const dispatch = useDispatch()
-    const state = useSelector(state => state.tasks)
     const deferFunc = () => {
-        dispatch(updateST_1("id", state.tasks.length))
+        // dispatch(updateST_1({"name": "id", value: state.tasks.length}))
         dispatch(updateMMS("add_task"))
     }
     return (

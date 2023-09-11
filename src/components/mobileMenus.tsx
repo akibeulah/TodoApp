@@ -1,6 +1,6 @@
 import {BellIcon, XMarkIcon} from "@heroicons/react/20/solid";
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useRef} from "react";
+import {RefObject, useEffect, useRef} from "react";
 import {
     addTask,
     deleteTask,
@@ -11,27 +11,30 @@ import {
     updateTT
 } from "../store/taskReducer.ts";
 import {CalendarIcon, ClockIcon} from "@heroicons/react/24/outline";
-import {dateOptions, formatDate, isDateToday} from "../utils.ts";
+import {formatDate, isDateToday} from "../utils.ts";
 import "react-datepicker/dist/react-datepicker.css";
+import RootState from "../types.ts";
 
 export const MobileMenus = () => {
-    const state = useSelector(state => state.tasks)
+    const state = useSelector((state: RootState) => state.tasks)
+
     const dispatch = useDispatch()
-    const mobileMenuContainerRef = useRef(null);
-    const mobileMenuRef = useRef(null);
-    const datePickerInputRef = useRef(null);
+    const mobileMenuContainerRef: RefObject<HTMLDivElement | null> = useRef(null);
+    const mobileMenuRef: RefObject<HTMLDivElement | null> = useRef(null);
+    const datePickerInputRef: RefObject<HTMLInputElement | null> = useRef(null);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event: MouseEvent) => {
             if (
                 mobileMenuContainerRef.current &&
-                mobileMenuContainerRef.current.contains(event.target) &&
-                !mobileMenuRef.current.contains(event.target) &&
+                mobileMenuRef.current &&
+                mobileMenuContainerRef.current.contains(event.target as Node) &&
+                !mobileMenuRef.current.contains(event.target as Node) &&
                 state.mobileMenuState !== "closed"
-            )
-                closeMenus()
+            ) {
+                closeMenus();
+            }
         };
-
         document.addEventListener("click", handleClickOutside);
 
         return () => {
@@ -42,7 +45,11 @@ export const MobileMenus = () => {
     const closeMenus = () => {
         dispatch(updateMMS("closed"))
         dispatch(updateST({
-            date: new Date().toLocaleDateString("en", dateOptions),
+            date: new Date().toLocaleDateString("en", {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit'
+            }),
             timeIn: "00:00",
             timeOut: "00:00",
             title: "",
@@ -59,10 +66,10 @@ export const MobileMenus = () => {
     };
 
     return (
-        <div ref={mobileMenuContainerRef}
+        <div ref={mobileMenuContainerRef as React.RefObject<HTMLDivElement>}
              className={"lg:hidden fixed z-50 top-0 left-0 right-0 bottom-0 w-screen h-screen bg-[#00000066] " + (state.mobileMenuState === "closed" ? "hidden" : "")}>
 
-            <div ref={mobileMenuRef}
+            <div ref={mobileMenuRef as React.RefObject<HTMLDivElement>}
                  className="bg-white p-6 absolute bottom-0 left-0 right-0 rounded-t-3xl">
                 <div className="flex flex-row justify-between mb-4">
                     <h4 className={"font-bold text-lg capitalize"}>{state.mobileMenuState.replace("_", " ")}</h4>
@@ -89,12 +96,18 @@ export const MobileMenus = () => {
                                     className={"text-xs flex flex-row items-center text-center border rounded-xl px-2 sm:px-4 py-2.5"}
                                     onClick={handleDatePickerClick}
                                 >
-                                    <input type="date" ref={datePickerInputRef} className={"hidden"}
+                                    <input type="date"
+                                           ref={datePickerInputRef as React.RefObject<HTMLInputElement>}
+                                           className={"hidden"}
                                            onChange={e => {
                                                dispatch(updateST_1(
                                                    {
                                                        name: "date",
-                                                       value: new Date(e.target.value).toLocaleDateString("en", dateOptions)
+                                                       value: new Date(e.target.value).toLocaleDateString("en", {
+                                                           year: '2-digit',
+                                                           month: '2-digit',
+                                                           day: '2-digit'
+                                                       })
                                                    }
                                                ))
                                            }}
@@ -108,7 +121,9 @@ export const MobileMenus = () => {
 
                                 <div
                                     className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                    <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                    <input type="time"
+                                        // ref={datePickerInputRef}
+                                           className={"hidden"}
                                            onChange={e => {
                                                dispatch(updateST_1(
                                                    {
@@ -124,7 +139,9 @@ export const MobileMenus = () => {
 
                                 <div
                                     className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                    <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                    <input type="time"
+                                        // ref={datePickerInputRef}
+                                           className={"hidden"}
                                            onChange={e => {
                                                dispatch(updateST_1(
                                                    {
@@ -158,7 +175,11 @@ export const MobileMenus = () => {
                                 <button onClick={() => {
                                     dispatch(addTask(state.selectedTask))
                                     dispatch(updateST({
-                                        date: new Date().toLocaleDateString("en", dateOptions),
+                                        date: new Date().toLocaleDateString("en", {
+                                            year: '2-digit',
+                                            month: '2-digit',
+                                            day: '2-digit'
+                                        }),
                                         timeIn: "00:00",
                                         timeOut: "00:00",
                                         title: "",
@@ -212,12 +233,18 @@ export const MobileMenus = () => {
                                                 className={"text-xs flex flex-row items-center text-center border rounded-xl px-2 sm:px-4 py-2.5"}
                                                 onClick={handleDatePickerClick}
                                             >
-                                                <input type="date" ref={datePickerInputRef} className={"hidden"}
+                                                <input type="date"
+                                                       ref={datePickerInputRef as React.RefObject<HTMLInputElement>}
+                                                       className={"hidden"}
                                                        onChange={e => {
                                                            dispatch(updateST_1(
                                                                {
                                                                    name: "date",
-                                                                   value: new Date(e.target.value).toLocaleDateString("en", dateOptions)
+                                                                   value: new Date(e.target.value).toLocaleDateString("en", {
+                                                                       year: '2-digit',
+                                                                       month: '2-digit',
+                                                                       day: '2-digit'
+                                                                   })
                                                                }
                                                            ))
                                                        }}
@@ -231,7 +258,9 @@ export const MobileMenus = () => {
 
                                             <div
                                                 className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                                <input type="time"
+                                                    // ref={datePickerInputRef}
+                                                       className={"hidden"}
                                                        onChange={e => {
                                                            dispatch(updateST_1(
                                                                {
@@ -247,7 +276,9 @@ export const MobileMenus = () => {
 
                                             <div
                                                 className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                                <input type="time"
+                                                    // ref={datePickerInputRef}
+                                                       className={"hidden"}
                                                        onChange={e => {
                                                            dispatch(updateST_1(
                                                                {
@@ -284,7 +315,11 @@ export const MobileMenus = () => {
                                                     newTask: state.selectedTask
                                                 }))
                                                 dispatch(updateST({
-                                                    date: new Date().toLocaleDateString("en", dateOptions),
+                                                    date: new Date().toLocaleDateString("en", {
+                                                        year: '2-digit',
+                                                        month: '2-digit',
+                                                        day: '2-digit'
+                                                    }),
                                                     timeIn: "00:00",
                                                     timeOut: "00:00",
                                                     title: "",

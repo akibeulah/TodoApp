@@ -1,7 +1,6 @@
 import {DateTileComponent} from "../components/dateTile.component.tsx";
 import {TaskComponent} from "../components/task.component.tsx";
 import {
-    dateOptions,
     fetchData,
     formatDate,
     generateMonthArray,
@@ -12,7 +11,7 @@ import {
     greet,
     isDateToday
 } from "../utils.ts";
-import {useEffect, useRef} from "react";
+import {RefObject, useEffect, useRef} from "react";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -30,20 +29,21 @@ import {PaginationComponent} from "../components/pagination.component.tsx";
 import {BellIcon, ChevronLeftIcon, ChevronRightIcon, PlusIcon, XMarkIcon} from "@heroicons/react/20/solid";
 import {CalendarIcon, ClockIcon} from "@heroicons/react/24/outline";
 import {CalenderDateTileComponent} from "../components/calenderDateTile.component.tsx";
+import RootState from "../types.ts";
 
 export const Home = () => {
-    const state = useSelector(state => state.tasks)
+    const state = useSelector((state: RootState) => state.tasks)
     const dispatch = useDispatch()
-    const dateCardsRef = useRef(null)
 
 
-    const mobileMenuContainerRef = useRef(null);
-    const mobileMenuRef = useRef(null);
-    const datePickerInputRef = useRef(null);
+    // const mobileMenuContainerRef = useRef(null);
+    // const mobileMenuRef = useRef(null);
+    const datePickerInputRef: RefObject<HTMLInputElement | null> = useRef(null);
+    const dateCardsRef: RefObject<HTMLDivElement | null> = useRef(null);
+
 
     const handleDatePickerClick = () => {
         if (datePickerInputRef.current) {
-            console.log(datePickerInputRef.current)
             datePickerInputRef.current.click();
         }
     };
@@ -52,12 +52,18 @@ export const Home = () => {
         fetchData()
             .then((todos: any) => {
                 dispatch(updateTasks(
-                    todos.slice(0, 10).map(i => {
-                        return {...i, date: new Date().toLocaleDateString("en", dateOptions)}
+                    todos.slice(0, 10).map((i: any) => {
+                        return {
+                            ...i, date: new Date().toLocaleDateString("en", {
+                                year: '2-digit',
+                                month: '2-digit',
+                                day: '2-digit'
+                            })
+                        }
                     })
                 ))
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 toast.error("Error fetching data:", error);
             });
     }, [])
@@ -70,11 +76,14 @@ export const Home = () => {
     }, [state.selectedDate]);
 
 
-
     const closeMenus = () => {
         dispatch(updateMMS("closed"))
         dispatch(updateST({
-            date: new Date().toLocaleDateString("en", dateOptions),
+            date: new Date().toLocaleDateString("en", {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit'
+            }),
             timeIn: "00:00",
             timeOut: "00:00",
             title: "",
@@ -115,10 +124,10 @@ export const Home = () => {
 
                     <div className="w-full overflow-hidden pb-8">
                         <div
-                            ref={dateCardsRef}
+                            ref={dateCardsRef as React.RefObject<HTMLDivElement>}
                             className="flex flex-row pl-4 overflow-x-scroll scrollbar scrollbar-thin">
                             {
-                                getDaysInMonthArray(new Date(state.selectedDate).getMonth()).map((item, key) =>
+                                getDaysInMonthArray(new Date(state.selectedDate).getMonth()).map((item: any, key: number) =>
                                         <span key={key} className={"mr-3"}>
                                     <DateTileComponent day={key + 1} weekday={getAbbreviatedDayOfWeek(item)}
                                                        active={new Date(state.selectedDate).getDate() === (key + 1)}/>
@@ -137,9 +146,9 @@ export const Home = () => {
                         </div>
                         {
                             state.tasks
-                                .filter(i => new Date(i.date).toLocaleDateString("en") === new Date(state.selectedDate).toLocaleDateString("en"))
+                                .filter((i: any) => new Date(i.date).toLocaleDateString("en") === new Date(state.selectedDate).toLocaleDateString("en"))
                                 .slice((state.page * 8), (state.page * 8) + 8)
-                                .map((item, key) =>
+                                .map((item: any, key: number) =>
                                         <span key={key} className={"block mb-4"}>
                                             <TaskComponent selected={false} title={item.title} index={item.id}
                                                            time={item.timeIn ? item.timeIn + "-" + item.timeOut : "10:30- 11:30"}
@@ -193,8 +202,9 @@ export const Home = () => {
 
                                         {
                                             generateMonthArray(state.selectedDate)
-                                                .map((item, key) =>
-                                                    <CalenderDateTileComponent text={item} header={false} key={key} active={new Date(state.selectedDate).getDate() === item}/>)
+                                                .map((item: any, key: number) =>
+                                                    <CalenderDateTileComponent text={item} header={false} key={key}
+                                                                               active={new Date(state.selectedDate).getDate() === item}/>)
                                         }
                                     </div>
                                 </div>
@@ -224,12 +234,18 @@ export const Home = () => {
                                                         className={"text-xs flex flex-row items-center text-center border rounded-xl px-2 sm:px-4 py-2.5"}
                                                         onClick={handleDatePickerClick}
                                                     >
-                                                        <input type="date" ref={datePickerInputRef} className={"hidden"}
+                                                        <input type="date"
+                                                               ref={datePickerInputRef as React.RefObject<HTMLInputElement>}
+                                                               className={"hidden"}
                                                                onChange={e => {
                                                                    dispatch(updateST_1(
                                                                        {
                                                                            name: "date",
-                                                                           value: new Date(e.target.value).toLocaleDateString("en", dateOptions)
+                                                                           value: new Date(e.target.value).toLocaleDateString("en", {
+                                                                               year: '2-digit',
+                                                                               month: '2-digit',
+                                                                               day: '2-digit'
+                                                                           })
                                                                        }
                                                                    ))
                                                                }}
@@ -244,7 +260,9 @@ export const Home = () => {
 
                                                     <div
                                                         className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                        <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                                        <input type="time"
+                                                            //ref={datePickerInputRef}
+                                                               className={"hidden"}
                                                                onChange={e => {
                                                                    dispatch(updateST_1(
                                                                        {
@@ -260,7 +278,9 @@ export const Home = () => {
 
                                                     <div
                                                         className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                        <input type="time" ref={datePickerInputRef} className={"hidden"}
+                                                        <input type="time"
+                                                            //ref={datePickerInputRef}
+                                                               className={"hidden"}
                                                                onChange={e => {
                                                                    dispatch(updateST_1(
                                                                        {
@@ -295,7 +315,11 @@ export const Home = () => {
                                                     <button onClick={() => {
                                                         dispatch(addTask(state.selectedTask))
                                                         dispatch(updateST({
-                                                            date: new Date().toLocaleDateString("en", dateOptions),
+                                                            date: new Date().toLocaleDateString("en", {
+                                                                year: '2-digit',
+                                                                month: '2-digit',
+                                                                day: '2-digit'
+                                                            }),
                                                             timeIn: "00:00",
                                                             timeOut: "00:00",
                                                             title: "",
@@ -349,13 +373,18 @@ export const Home = () => {
                                                                     className={"text-xs flex flex-row items-center text-center border rounded-xl px-2 sm:px-4 py-2.5"}
                                                                     onClick={handleDatePickerClick}
                                                                 >
-                                                                    <input type="date" ref={datePickerInputRef}
+                                                                    <input type="date"
                                                                            className={"hidden"}
+                                                                           ref={datePickerInputRef as React.RefObject<HTMLInputElement>}
                                                                            onChange={e => {
                                                                                dispatch(updateST_1(
                                                                                    {
                                                                                        name: "date",
-                                                                                       value: new Date(e.target.value).toLocaleDateString("en", dateOptions)
+                                                                                       value: new Date(e.target.value).toLocaleDateString("en", {
+                                                                                           year: '2-digit',
+                                                                                           month: '2-digit',
+                                                                                           day: '2-digit'
+                                                                                       })
                                                                                    }
                                                                                ))
                                                                            }}
@@ -370,7 +399,8 @@ export const Home = () => {
 
                                                                 <div
                                                                     className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                                    <input type="time" ref={datePickerInputRef}
+                                                                    <input type="time"
+                                                                        // ref={datePickerInputRef}
                                                                            className={"hidden"}
                                                                            onChange={e => {
                                                                                dispatch(updateST_1(
@@ -387,7 +417,8 @@ export const Home = () => {
 
                                                                 <div
                                                                     className={"text-sm flex flex-row items-center border rounded-xl px-2 sm:px-4 py-2.5"}>
-                                                                    <input type="time" ref={datePickerInputRef}
+                                                                    <input type="time"
+                                                                        // ref={datePickerInputRef as React.RefObject<HTMLInputElement>}
                                                                            className={"hidden"}
                                                                            onChange={e => {
                                                                                dispatch(updateST_1(
@@ -426,7 +457,11 @@ export const Home = () => {
                                                                         newTask: state.selectedTask
                                                                     }))
                                                                     dispatch(updateST({
-                                                                        date: new Date().toLocaleDateString("en", dateOptions),
+                                                                        date: new Date().toLocaleDateString("en", {
+                                                                            year: '2-digit',
+                                                                            month: '2-digit',
+                                                                            day: '2-digit'
+                                                                        }),
                                                                         timeIn: "00:00",
                                                                         timeOut: "00:00",
                                                                         title: "",

@@ -1,11 +1,7 @@
-import React from "react";
 import {Bars3CenterLeftIcon} from "@heroicons/react/20/solid";
-import {bellIcon, cogIcon, logoSmall, user_icon, userIcon} from "../assets";
-import {useSelector} from "react-redux";
+import {bellIcon, cogIcon, logoSmall, userIcon} from "../assets";
 
 export const HeaderComponent = () => {
-    const state = useSelector(state => state.tasks)
-
     return (
         <>
             <nav

@@ -1,19 +1,28 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {dateOptions, replaceTaskByIndex} from "../utils.ts";
+import {replaceTaskByIndex} from "../utils";
+import {Task, Tasks} from "../types.ts";
 
-const initialState = {
+const initialState: Tasks = {
     tasks: [],
     targetTask: -1,
     selectedTask: {
         id: -1,
-        date: new Date().toLocaleDateString("en", dateOptions),
+        date: new Date().toLocaleDateString("en", {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit'
+        }),
         timeIn: "00:00",
         timeOut: "00:00",
         title: "",
         completed: false,
         selected: false
     },
-    selectedDate: new Date().toLocaleDateString("en", dateOptions),
+    selectedDate: new Date().toLocaleDateString("en", {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit'
+    }),
     page: 0,
     loading: false,
     mobileMenuState: "closed"
@@ -69,7 +78,7 @@ const taskReducer = createSlice({
             return {
                 ...state,
                 mobileMenuState: "closed",
-                tasks: state.tasks.filter(task => task.id !== taskIdToDelete + 1)
+                tasks: state.tasks.filter((task: Task) => task.id !== taskIdToDelete + 1)
             };
         },
         updateSD: (state, action) => {

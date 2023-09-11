@@ -1,9 +1,10 @@
 import {ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/20/solid";
 import {useDispatch, useSelector} from "react-redux";
 import {updatePage} from "../store/taskReducer.ts";
+import RootState from "../types.ts";
 
 export const PaginationComponent = () => {
-    const state = useSelector(state => state.tasks)
+    const state = useSelector((state: RootState) => state.tasks)
     const dispatch = useDispatch()
 
     const tasksPerPage = 8;

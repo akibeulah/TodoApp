@@ -58,18 +58,15 @@ export const fetchData = () => {
     });
 }
 
-export const dateOptions = {year: '2-digit', month: '2-digit', day: '2-digit'};
-
-export const getTodayMonthAndYear = (dateString) => {
+export const getTodayMonthAndYear = (dateString: string) => {
     const dateObj = new Date(dateString);
     const month = dateObj.toLocaleString('en', {month: 'long'});
     const year = dateObj.getFullYear();
     return `${month} ${year}`;
 }
 
-export const formatDate = (date) => {
-    const options = {year: 'numeric', month: 'long', day: 'numeric'};
-    const formattedDate = new Date(date).toLocaleDateString('en-US', options);
+export const formatDate = (date: string) => {
+    const formattedDate = new Date(date).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
 
     const day = new Date(date).getDate();
     const daySuffix =
@@ -84,7 +81,7 @@ export const formatDate = (date) => {
     return formattedDate.replace(/\d{1,2}/, day + daySuffix);
 }
 
-export const replaceTaskByIndex = (state, index, newTask) => {
+export const replaceTaskByIndex = (state: any, index: any, newTask: any) => {
     const updatedTasks = [...state.tasks];
     updatedTasks[index] = newTask;
 
@@ -94,7 +91,7 @@ export const replaceTaskByIndex = (state, index, newTask) => {
     };
 };
 
-export const generateMonthArray = (date) => {
+export const generateMonthArray = (date: string) => {
     const startDate = new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 1);
     const endDate = new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 0); // Get the last day of the month
 
@@ -109,7 +106,7 @@ export const generateMonthArray = (date) => {
     return resultArray;
 }
 
-export const getInputDate = (date) => {
+export const getInputDate = (date: string) => {
     const today = new Date(date);
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
