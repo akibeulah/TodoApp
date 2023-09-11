@@ -78,7 +78,7 @@ const taskReducer = createSlice({
             return {
                 ...state,
                 mobileMenuState: "closed",
-                tasks: state.tasks.filter((task: Task) => task.id !== taskIdToDelete + 1)
+                tasks: state.tasks.filter((task: Task) => task.id !== taskIdToDelete)
             };
         },
         updateSD: (state, action) => {
